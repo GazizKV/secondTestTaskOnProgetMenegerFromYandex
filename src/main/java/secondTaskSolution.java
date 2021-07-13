@@ -1,8 +1,11 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class secondTaskSolution {
-    public static ArrayList<Asessor> listOfAsessors = new ArrayList<Asessor>();
+    public static Map<Integer, Asessor> listOfAsessors = new HashMap<>();
 
     public static Asessor getNewAsessor(String[] nextLine) {
         Asessor newAsessor = new Asessor(nextLine[0],
@@ -13,6 +16,23 @@ public class secondTaskSolution {
         return newAsessor;
     }
 
+    public static Asessor getUpDateAsessor(String[] nextLine, Integer key) {
+        Asessor upDateAsessor = listOfAsessors.get(key);
+        if(upDateAsessor.cjud == 1) {
+            upDateAsessor.allScore++;
+            upDateAsessor.scorOfCorrectAns++;
+        } else {
+            upDateAsessor.scorOfInCorrectAns++;
+        }
+        if(upDateAsessor.jud == upDateAsessor.cjud) {
+            upDateAsessor.allScore += 1;
+            upDateAsessor.scorOfDifferences += 1;
+        }
+        if(upDateAsessor.cjud != 1) upDateAsessor.allScore--;
+        if(upDateAsessor.jud != upDateAsessor.cjud) upDateAsessor.allScore--;
+        return upDateAsessor;
+    }
+
     public static void main(String[] args) {
         File file =  new File("C:\\Users\\valit\\secondTestTaskOnProgetMenegerFromYandex\\src\\main\\resources\\файл 2.csv");
         try {
@@ -21,23 +41,25 @@ public class secondTaskSolution {
             while (bufferedReader.ready()) {
                 nextLine = bufferedReader.readLine().split("\\s");
                 if(nextLine[1].equals("uid")) continue;
-                listOfAsessors.add(getNewAsessor(nextLine));
+                if(!listOfAsessors.containsKey(Integer.parseInt(nextLine[1]))) {
+                    listOfAsessors.put(Integer.parseInt(nextLine[1]), getNewAsessor(nextLine));
+                } else {
+                    Integer key = Integer.parseInt(nextLine[1]);
+                    Asessor upDateAsessor = getUpDateAsessor(nextLine, key);
+                    listOfAsessors.put(key, upDateAsessor);
+                }
             }
             bufferedReader.close();
 
-            /**
-             * я решил что наихудшими будут те кто (сдал или не сдал) и оценили свою работу не правильно.
-             * для этого я сделаю отдельный лист только с теми у кого не совпадают бинарные оценки
-             * то есть jud and cjud
-             */
-            ArrayList<Asessor> listOfWorstAsessors = new ArrayList<>();
-            for (Asessor asessor : listOfAsessors) {
-                if(asessor.jud != asessor.cjud) listOfWorstAsessors.add(asessor);
+            for (Map.Entry<Integer, Asessor> entry : listOfAsessors.entrySet()) {
+                System.out.println(entry.getKey()
+                        + " " + entry.getValue().login
+                        + " " + entry.getValue().allScore
+                        + " " + entry.getValue().scorOfCorrectAns
+                        + " " + entry.getValue().scorOfInCorrectAns
+                        + " " + entry.getValue().scorOfDifferences);
             }
-            /*
-            * вывод login в консоль худших асессоров
-            * */
-            for (Asessor asessor : listOfWorstAsessors) System.out.println(asessor.login);
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
