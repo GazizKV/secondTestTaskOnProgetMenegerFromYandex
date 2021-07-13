@@ -23,10 +23,21 @@ public class secondTaskSolution {
                 if(nextLine[1].equals("uid")) continue;
                 listOfAsessors.add(getNewAsessor(nextLine));
             }
-            for (int i = 0; i < 10; i++) {
-                System.out.println(listOfAsessors.get(i).login);
-            }
             bufferedReader.close();
+
+            /**
+             * я решил что наихудшими будут те кто (сдал или не сдал) и оценили свою работу не правильно.
+             * для этого я сделаю отдельный лист только с теми у кого не совпадают бинарные оценки
+             * то есть jud and cjud
+             */
+            ArrayList<Asessor> listOfWorstAsessors = new ArrayList<>();
+            for (Asessor asessor : listOfAsessors) {
+                if(asessor.jud != asessor.cjud) listOfWorstAsessors.add(asessor);
+            }
+            /*
+            * вывод login в консоль худших асессоров
+            * */
+            for (Asessor asessor : listOfWorstAsessors) System.out.println(asessor.login);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
