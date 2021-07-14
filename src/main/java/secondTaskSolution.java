@@ -1,3 +1,5 @@
+import jdk.swing.interop.SwingInterOpUtils;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,9 +36,11 @@ public class secondTaskSolution {
     }
 
     public static void main(String[] args) {
-        File file =  new File("C:\\Users\\valit\\secondTestTaskOnProgetMenegerFromYandex\\src\\main\\resources\\файл 2.csv");
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+
+        StringBuilder path = new StringBuilder((System.getProperty("user.dir") + "\\target\\classes" + "\\file.csv").replace("/", "\\"));
+        File file =  new File(path.toString());
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file));)
+        {
             String[] nextLine;
             while (bufferedReader.ready()) {
                 nextLine = bufferedReader.readLine().split("\\s");
@@ -49,15 +53,14 @@ public class secondTaskSolution {
                     listOfAsessors.put(key, upDateAsessor);
                 }
             }
-            bufferedReader.close();
-
+            System.out.println("Хуже всего справились с заданием следующие асессоры.");
             for (Map.Entry<Integer, Asessor> entry : listOfAsessors.entrySet()) {
-                System.out.println(entry.getKey()
-                        + " " + entry.getValue().login
-                        + " " + entry.getValue().allScore
-                        + " " + entry.getValue().scorOfCorrectAns
-                        + " " + entry.getValue().scorOfInCorrectAns
-                        + " " + entry.getValue().scorOfDifferences);
+                if(entry.getValue().allScore < 0) {
+                    System.out.println(entry.getKey()
+                            + " " + entry.getValue().login
+                            + " " + "generalScor = " + entry.getValue().allScore
+                    );
+                }
             }
 
         } catch (FileNotFoundException e) {
